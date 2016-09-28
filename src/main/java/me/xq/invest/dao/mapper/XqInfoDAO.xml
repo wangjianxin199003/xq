@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="me.xq.invest.dao.XqInfoDAO">
+
+    <insert id="addNewXqInfo" useGeneratedKeys="true" keyProperty="primaryKey">
+        insert into xq_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="primaryKey != null and primaryKey != ''">
+                primary_key,
+            </if>
+            <if test="xqId != null and primaryKey != ''">
+                xq_id,
+            </if>
+            <if test="xqName != null and xqName != ''">
+                xq_name,
+            </if>
+            <if test="startDate != null and startDate !='' ">
+                start_date,
+            </if>
+            <if test="endDate != null and endDate != ''">
+                end_date,
+            </if>
+        </trim>
+        <trim prefix="value (" suffix=")" suffixOverrides=",">
+            <if test="primaryKey != null and primaryKey != ''">
+                #{primaryKey},
+            </if>
+            <if test="xqId != null and primaryKey != ''">
+                #{xqId},
+            </if>
+            <if test="xqName != null and xqName != ''">
+                #{xqName},
+            </if>
+            <if test="startDate != null and startDate !='' ">
+                #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+                #{endDate},
+            </if>
+        </trim>
+
+    </insert>
+</mapper>

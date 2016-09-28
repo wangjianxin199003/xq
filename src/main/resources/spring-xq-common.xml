@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--打开注解选项-->
+    <context:annotation-config/>
+
+    <!--设置注解扫描路径-->
+    <context:component-scan base-package="me.xq.invest">
+
+    </context:component-scan>
+
+    <!--加载配置文件-->
+    <context:property-placeholder location="classpath:xq-config.properties" file-encoding="utf-8"/>
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+      <property name="username" value="${jdbc_username}"/>
+      <property name="password" value="${jdbc_password}"/>
+      <property name="driverClassName" value="${jdbc_driver}"/>
+      <property name="url" value="${jdbc_url}" />
+      <property name="initialSize" value="${jdbc_initialSize}"/>
+      <property name="maxActive" value="${jdbc_maxActive}"/>
+      <property name="maxIdle" value="${jdbc_maxIdle}"/>
+      <property name="minIdle" value="${jdbc_minIdle}" />
+      <property name="testOnBorrow" value="${jdbc_testOnBorrow}" />
+      <property name="validationQuery" value="${jdbc_validationQuery}" />
+    </bean>
+
+    <!--配置sqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configurationProperties">
+            <props>
+                <prop key="cacheEnabled">false</prop>
+                <prop key="callSettersOnNulls">false</prop>
+            </props>
+        </property>
+        <property name="mapperLocations" value="classpath:me/xq/invest/dao/mapper/*.xml"/>
+        <property name="typeAliasesPackage" value="me.xq.invest.domain"/>
+    </bean>
+
+    <!--扫描dao接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+       <property name="basePackage" value="me.xq.invest.dao" />
+    </bean>
+
+    <!-- 配置线程池 -->
+    <bean id="taskExecutor"
+          class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 核心线程数 -->
+        <property name="corePoolSize" value="${task.core_pool_size}" />
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="${task.max_pool_size}" />
+        <!-- 队列最大长度 -->
+        <property name="queueCapacity" value="${task.queue_capacity}" />
+        <!-- 线程池维护线程所允许的空闲时间，默认为60s -->
+        <property name="keepAliveSeconds" value="${task.keep_alive_seconds}" />
+        <!-- 当线程不够时,选择一种方式执行 -->
+        <property name="rejectedExecutionHandler">
+            <!-- 重试添加当前的任务，他会自动重复调用execute()方法会造成执行顺序混乱 -->
+            <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+        </property>
+    </bean>
+
+</beans>
