@@ -3,13 +3,10 @@
 
 <mapper namespace="me.xq.invest.dao.XqInfoDAO">
 
-    <insert id="addNewXqInfo" useGeneratedKeys="true" keyProperty="primaryKey">
+    <insert id="addNewXqInfo">
         insert into xq_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="primaryKey != null and primaryKey != ''">
-                primary_key,
-            </if>
-            <if test="xqId != null and primaryKey != ''">
+            <if test="xqId != null and xqId != ''">
                 xq_id,
             </if>
             <if test="xqName != null and xqName != ''">
@@ -22,11 +19,9 @@
                 end_date,
             </if>
         </trim>
-        <trim prefix="value (" suffix=")" suffixOverrides=",">
-            <if test="primaryKey != null and primaryKey != ''">
-                #{primaryKey},
-            </if>
-            <if test="xqId != null and primaryKey != ''">
+
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="xqId != null and xqId != ''">
                 #{xqId},
             </if>
             <if test="xqName != null and xqName != ''">
@@ -39,6 +34,20 @@
                 #{endDate},
             </if>
         </trim>
+        on duplicate key
+        update
+        <trim  suffixOverrides=",">
+            <if test="xqName != null and xqName != ''">
+                xq_name = #{xqName},
+            </if>
+            <if test="startDate != null and startDate !='' ">
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+                end_date = #{endDate},
+            </if>
+        </trim>
+
 
     </insert>
 
@@ -46,5 +55,16 @@
         select count(*)
         from xq_info
         where xq_id = #{xqId}
+    </select>
+
+    <select id="getXqInfoByXqId" resultType="me.xq.invest.domain.XqInfo">
+        select
+        xq_id xqId,
+        xq_name xqName,
+        start_date startDate,
+        end_date endDate
+        from xq_info
+        where
+        xq_id = #{xqId}
     </select>
 </mapper>

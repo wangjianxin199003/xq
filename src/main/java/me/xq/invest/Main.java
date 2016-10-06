@@ -1,25 +1,21 @@
 package me.xq.invest;
 
-import com.sun.deploy.util.Waiter;
 import me.xq.invest.domain.XqInfo;
 import me.xq.invest.service.DownloadService;
 import me.xq.invest.service.impl.XqInfoDownloadServiceImpl;
-import org.apache.ibatis.jdbc.Null;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by wangjianxin on 9/27/16.
  */
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         final Logger logger = Logger.getLogger("main");
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-xq-common.xml");
         Integer xqId = 1;
@@ -33,64 +29,40 @@ public class Main {
             if (xqId == 300600) {
                 xqId = 600000;
             }
-            ++xqId;
-
             String xqIdString = String.format("%06d", xqId);
             xqIdList.add(xqIdString);
+            ++xqId;
         }
 
-//        xqIdList.clear();
-//        xqIdList.add("001670");
-        final DownloadService<XqInfo> xqInfoDownloadService = (XqInfoDownloadServiceImpl)context.getBean("xqInfoDownloadService");
-        final List<String>  errorXqIdList = new ArrayList<String>();
-        final TaskExecutor taskExecutor = (TaskExecutor)context.getBean("taskExecutor");
+        DownloadService<XqInfo> xqInfoDownloadService = (XqInfoDownloadServiceImpl) context.getBean("xqInfoDownloadService");
+        //存放下载错误的股票代码
+        List<String> errorXqIdList = new ArrayList<String>();
         int i = 1;
-        System.out.println("等待下载的数量： " + xqIdList.size());
-        //logger.warn("等待下载的数量： " + xqIdList.size());
-        while (xqIdList.size() > 0){
-            for(String xqIdString : xqIdList){
-                final String tempXqIdString = xqIdString;
-                Thread thread = new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            System.out.println("开始下载： " + tempXqIdString);
-                            //logger.warn("开始下载： " + tempXqIdString);
-                            xqInfoDownloadService.xqDownload(XqInfo.class,tempXqIdString,"http://d.10jqka.com.cn/v2/line/hs_%s/01/last.js",new String[] {tempXqIdString});
-                            System.out.println("下载成功： " + tempXqIdString);
-                            //logger.warn("下载成功： " + tempXqIdString);
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            System.out.println("下载失败： " + tempXqIdString);
-                            //logger.warn("下载失败： " + tempXqIdString);
-                            synchronized (errorXqIdList){
-                                errorXqIdList.add(tempXqIdString);
-                            }
-                        }
-                    }
-                });
-                taskExecutor.execute(thread);
+        while (xqIdList.size() > 0) {
+            for (String xqIdString : xqIdList) {
+
                 try {
-                    thread.join();
-                }catch (Exception e){
+                    logger.warn("开始下载： " + xqIdString);
+                    xqInfoDownloadService.xqDownload(XqInfo.class, xqIdString, "http://d.10jqka.com.cn/v2/line/hs_%s/01/last.js", new String[]{xqIdString});
+                    logger.warn("下载成功： " + xqIdString);
+                } catch (Exception e) {
                     e.printStackTrace();
+                    logger.warn("下载失败： " + xqIdString);
+                    errorXqIdList.add(xqIdString);
                 }
-
             }
-
+            //清空准备下载的股票列表
             xqIdList.clear();
+            //把下载错误的股票代码放入准备下载的股票列表中
             xqIdList.addAll(errorXqIdList);
-            System.out.println("--------------------------------");
-            for(String error : errorXqIdList){
+            for (String error : errorXqIdList) {
                 System.out.println(error);
             }
-            System.out.println("第" + i +"遍，错误数量： " + errorXqIdList.size());
-           // logger.warn("第" + i +"遍，错误数量： " + errorXqIdList.size());
+            logger.warn("第" + i + "遍，错误数量： " + errorXqIdList.size());
+            //清空错误股票代码
             errorXqIdList.clear();
             i++;
+        }
 
-        }
-        if(xqIdList.size() == 0){
-            return;
-        }
     }
 }

@@ -19,4 +19,11 @@ public interface XqInfoDAO {
      * @return
      */
     Integer countXqByXqId(String xqId);
+
+    /**
+     * 根据股票代码查询股票
+     * @param xqId
+     * @return
+     */
+    XqInfo getXqInfoByXqId(String xqId);
 }

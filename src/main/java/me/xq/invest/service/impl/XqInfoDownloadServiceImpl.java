@@ -29,34 +29,15 @@ public class XqInfoDownloadServiceImpl extends DownloadService<XqInfo> {
     @Autowired
     private XqInfoDAO xqInfoDAO;
 
-    @Autowired
-    private PoolingHttpClientConnectionManager httpClientConnectionManager;
+
 
     @Override
-    public Map<String, String> downloadInfo (String formatedUrl, String xqId) throws  Exception{
-
-        //模拟浏览器请求
-        CloseableHttpClient httpClient= HttpClients.custom().setConnectionManager(httpClientConnectionManager).build();
-
-        //httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 60000);
-        HttpGet httpget = new HttpGet(formatedUrl);
-        httpget.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(5000).setSocketTimeout(5000).build();
-        httpget.setConfig(requestConfig);
-
-        CloseableHttpResponse response = null;
-        response = httpClient.execute(httpget);
-
-        HttpEntity httpEntity = response.getEntity();
-        String stringResult = null;
-        //返回结果
-        stringResult =  EntityUtils.toString(httpEntity);
-
+    public Map<String, String> parseInfo(String jsonString, String xqId) {
         //如果该股票存在
-        if(stringResult != null && stringResult.length() >0 ){
+        if(jsonString != null && jsonString.length() >0 ){
 
             //得到json串
-            stringResult = stringResult.substring(stringResult.indexOf("{"), stringResult.lastIndexOf("}") + 1);
+            String stringResult = jsonString.substring(jsonString.indexOf("{"), jsonString.lastIndexOf("}") + 1);
             JSONObject json = JSON.parseObject(stringResult);
             Map<String, String> resultMap = new HashMap<String, String>();
             //封装成map
@@ -68,16 +49,21 @@ public class XqInfoDownloadServiceImpl extends DownloadService<XqInfo> {
         }else {
             return  null;
         }
-
     }
 
     public void saveObject(XqInfo domain) {
+        //如果存在该股票
         if(domain != null){
-            return;
-//            if (xqInfoDAO.countXqByXqId(domain.getXqId()) == 0) {
-//
-//                xqInfoDAO.addNewXqInfo(domain);
-//            }
+
+            XqInfo xqInfo = xqInfoDAO.getXqInfoByXqId(domain.getXqId());
+            //如果该股票没有更名，直接返回
+            if(xqInfo != null && domain.getXqName() == xqInfo.getXqName()){
+                return;
+                //如果更名，则更新该股票信息
+            }else {
+                xqInfoDAO.addNewXqInfo(domain);
+            }
+            //不存在该股票信息，直接返回
         }else {
             return;
         }
