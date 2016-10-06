@@ -6,10 +6,12 @@ import me.xq.invest.dao.XqInfoDAO;
 import me.xq.invest.domain.XqInfo;
 import me.xq.invest.service.DownloadService;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
@@ -27,15 +29,20 @@ public class XqInfoDownloadServiceImpl extends DownloadService<XqInfo> {
     @Autowired
     private XqInfoDAO xqInfoDAO;
 
+    @Autowired
+    private PoolingHttpClientConnectionManager httpClientConnectionManager;
+
     @Override
     public Map<String, String> downloadInfo (String formatedUrl, String xqId) throws  Exception{
 
         //模拟浏览器请求
-        CloseableHttpClient httpClient= HttpClients.createDefault();
+        CloseableHttpClient httpClient= HttpClients.custom().setConnectionManager(httpClientConnectionManager).build();
 
         //httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 60000);
         HttpGet httpget = new HttpGet(formatedUrl);
         httpget.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(5000).setSocketTimeout(5000).build();
+        httpget.setConfig(requestConfig);
 
         CloseableHttpResponse response = null;
         response = httpClient.execute(httpget);

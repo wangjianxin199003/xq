@@ -1,5 +1,6 @@
 package me.xq.invest;
 
+import com.sun.deploy.util.Waiter;
 import me.xq.invest.domain.XqInfo;
 import me.xq.invest.service.DownloadService;
 import me.xq.invest.service.impl.XqInfoDownloadServiceImpl;
@@ -38,34 +39,58 @@ public class Main {
             xqIdList.add(xqIdString);
         }
 
-
+//        xqIdList.clear();
+//        xqIdList.add("001670");
         final DownloadService<XqInfo> xqInfoDownloadService = (XqInfoDownloadServiceImpl)context.getBean("xqInfoDownloadService");
-        final List<String> errorXqIdList = new ArrayList<String>();
+        final List<String>  errorXqIdList = new ArrayList<String>();
         final TaskExecutor taskExecutor = (TaskExecutor)context.getBean("taskExecutor");
         int i = 1;
+        System.out.println("等待下载的数量： " + xqIdList.size());
+        //logger.warn("等待下载的数量： " + xqIdList.size());
         while (xqIdList.size() > 0){
             for(String xqIdString : xqIdList){
                 final String tempXqIdString = xqIdString;
-                taskExecutor.execute(new Runnable() {
+                Thread thread = new Thread(new Runnable() {
                     public void run() {
                         try {
-                            logger.warn("开始下载： " + tempXqIdString);
+                            System.out.println("开始下载： " + tempXqIdString);
+                            //logger.warn("开始下载： " + tempXqIdString);
                             xqInfoDownloadService.xqDownload(XqInfo.class,tempXqIdString,"http://d.10jqka.com.cn/v2/line/hs_%s/01/last.js",new String[] {tempXqIdString});
-                            logger.warn("下载成功： " + tempXqIdString);
+                            System.out.println("下载成功： " + tempXqIdString);
+                            //logger.warn("下载成功： " + tempXqIdString);
                         }catch (Exception e){
-                            logger.warn("下载失败： " + tempXqIdString);
-                            errorXqIdList.add(tempXqIdString);
+                            e.printStackTrace();
+                            System.out.println("下载失败： " + tempXqIdString);
+                            //logger.warn("下载失败： " + tempXqIdString);
+                            synchronized (errorXqIdList){
+                                errorXqIdList.add(tempXqIdString);
+                            }
                         }
                     }
                 });
+                taskExecutor.execute(thread);
+                try {
+                    thread.join();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
             }
+
             xqIdList.clear();
             xqIdList.addAll(errorXqIdList);
-            logger.warn("第" + i +"遍，错误数量： " + errorXqIdList.size());
+            System.out.println("--------------------------------");
+            for(String error : errorXqIdList){
+                System.out.println(error);
+            }
+            System.out.println("第" + i +"遍，错误数量： " + errorXqIdList.size());
+           // logger.warn("第" + i +"遍，错误数量： " + errorXqIdList.size());
             errorXqIdList.clear();
             i++;
 
+        }
+        if(xqIdList.size() == 0){
+            return;
         }
     }
 }

@@ -65,4 +65,8 @@
         </property>
     </bean>
 
+    <bean id="httpClientConnectionManager" class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">
+        <property name="maxTotal" value="${http_max_connection}"></property>
+    </bean>
+
 </beans>
