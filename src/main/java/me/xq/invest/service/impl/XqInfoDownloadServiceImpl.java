@@ -32,6 +32,7 @@ public class XqInfoDownloadServiceImpl extends DownloadService<XqInfo> {
 
         //模拟浏览器请求
         CloseableHttpClient httpClient= HttpClients.createDefault();
+
         //httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 60000);
         HttpGet httpget = new HttpGet(formatedUrl);
         httpget.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");

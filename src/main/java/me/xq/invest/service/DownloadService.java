@@ -70,9 +70,10 @@ public abstract  class DownloadService<T> {
         String formatedUrl = formatUrl(url, args);
         //解析json得到Map,key为属性，value为值
         Map<String,String> info = downloadInfo(formatedUrl, xqId);
-        //得到实体类对象
-        T domain = parseObject(info, domainClass);
-        //保存
-        saveObject(domain);
+        return;
+//        //得到实体类对象
+//        T domain = parseObject(info, domainClass);
+//        //保存
+//        saveObject(domain);
     }
 }
