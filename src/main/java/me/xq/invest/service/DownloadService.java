@@ -30,7 +30,7 @@ public abstract  class DownloadService<T> {
      * @param formatedUrl
      * @return
      */
-    public abstract Map<String, String> downloadInfo(String formatedUrl, String xqId);
+    public abstract Map<String, String> downloadInfo(String formatedUrl, String xqId) throws  Exception;
 
     /**
      * Map转实体类
@@ -40,13 +40,17 @@ public abstract  class DownloadService<T> {
      */
     T parseObject(Map<String,String> info, Class domainClass){
         T domain =  null;
-        try {
-            domain = (T)domainClass.newInstance();
-            BeanUtils.populate(domain, info);
-        }catch (Exception e){
-            e.printStackTrace();
+        if(info != null){
+            try {
+                domain = (T)domainClass.newInstance();
+                BeanUtils.populate(domain, info);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return domain;
+        }else {
+            return  null;
         }
-        return domain;
     }
 
     /**
@@ -61,7 +65,7 @@ public abstract  class DownloadService<T> {
      * @param url
      * @param args
      */
-    public void xqDownload(Class<T> domainClass,  String xqId,String url, String[] args){
+    public void xqDownload(Class<T> domainClass,  String xqId,String url, String[] args) throws Exception{
         //格式化url
         String formatedUrl = formatUrl(url, args);
         //解析json得到Map,key为属性，value为值

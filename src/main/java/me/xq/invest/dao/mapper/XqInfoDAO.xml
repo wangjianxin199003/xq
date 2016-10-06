@@ -41,4 +41,10 @@
         </trim>
 
     </insert>
+
+    <select id="countXqByXqId" resultType="integer">
+        select count(*)
+        from xq_info
+        where xq_id = #{xqId}
+    </select>
 </mapper>
