@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="me.xq.invest.dao.XqDebtDAO">
+    <insert id="addNewDebtInfo">
+      insert ignore into xq_debt
+        <trim prefix="(" suffix=")">
+          xq_id,
+          date,
+          total_assets,
+          gross_liabilities,
+          shareholders_equity
+        </trim>
+    values
+    <foreach collection="xqDebtList" index="index" item="item"  separator=",">
+        <trim prefix="(" suffix=")">
+            #{item.xqId},
+            #{item.date},
+            #{item.totalAssets},
+            #{item.grossLiabilities},
+            #{item.shareholdersEquity}
+        </trim>
+    </foreach>
+    </insert>
+</mapper>

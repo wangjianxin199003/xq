@@ -6,8 +6,6 @@ import org.apache.log4j.Logger;
  * Created by wangjianxin on 9/16/16.
  */
 public class XqInfo {
-    //主键
-    private Integer primaryKey;
     //代码
     private String xqId;
     //名字
@@ -17,13 +15,6 @@ public class XqInfo {
     //退市日期
     private String endDate;
 
-    public Integer getPrimaryKey() {
-        return primaryKey;
-    }
-
-    public void setPrimaryKey(Integer primaryKey) {
-        this.primaryKey = primaryKey;
-    }
 
     public String getXqId() {
         return xqId;

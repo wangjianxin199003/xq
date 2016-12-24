@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="me.xq.invest.dao.XqKlineDAO">
+    <insert id="addNewXqKline" parameterType="me.xq.invest.domain.XqKline">
+      insert into xq_kline
+      <trim prefix="(" suffix=")">
+          xq_id,
+          date,
+          open_price,
+          max_price,
+          mini_price,
+          close_price,
+          turn_over,
+          volume,
+          turn_over_rate
+      </trim>
+        values
+        <trim prefix="(" suffix=")">
+            #{xqId},
+            #{date},
+            #{openPrice},
+            #{maxPrice},
+            #{minPrice},
+            #{closePrice},
+            #{turnOver},
+            #{volume},
+            #{turnOverRate}
+        </trim>
+    </insert>
+</mapper>

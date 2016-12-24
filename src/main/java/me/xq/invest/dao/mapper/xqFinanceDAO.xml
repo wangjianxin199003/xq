@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="me.xq.invest.dao.XqFinanceDAO">
+    <insert id="addNewFinanceInfo" parameterType="java.util.List">
+        insert ignore into xq_finance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                xq_id,
+                date,
+                basic_earnings_per_share,
+                net_profit,
+                net_profit_growth_rate,
+                non_net_profit,
+                gross_revenue,
+                gross_revenue_growth_rate,
+                net_asset_value_per_share,
+                return_on_equity,
+                return_on_equity_diluted,
+                asset_liability_ratio,
+                capital_reserve_per_share,
+                undistributed_profit_per_share,
+                operational_cash_flow_per_share,
+                gross_profit_rate,
+                inventory_turnover,
+        </trim>
+        values
+        <foreach collection="xqFinanceList" index="index" item="item"  separator=",">
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.xqId != null and item.xqId != ''">
+                    #{item.xqId},
+                </if>
+                <if test="item.date != null and item.date != ''">
+                    #{item.date},
+                </if>
+                <if test="item.basicEarningsPerShare != null">
+                    #{item.basicEarningsPerShare},
+                </if>
+                <if test="item.netProfit != null">
+                    #{item.netProfit},
+                </if>
+                <if test="item.netProfitGrowthRate != null">
+                    #{item.netProfitGrowthRate},
+                </if>
+                <if test="item.nonNetProfit != null">
+                    #{item.nonNetProfit},
+                </if>
+                <if test="item.grossRevenue != null">
+                    #{item.grossRevenue},
+                </if>
+                <if test="item.grossRevenueGrowthRate != null">
+                    #{item.grossRevenueGrowthRate},
+                </if>
+                <if test="item.netAssetValuePerShare != null">
+                    #{item.netAssetValuePerShare},
+                </if>
+                <if test="item.returnOnEquity != null">
+                    #{item.returnOnEquity},
+                </if>
+                <if test="item.returnOnEquityDiluted != null">
+                    #{item.returnOnEquityDiluted},
+                </if>
+                <if test="item.assetLiabilityRatio != null">
+                    #{item.assetLiabilityRatio},
+                </if>
+                <if test="item.capitalReservePerShare != null">
+                    #{item.capitalReservePerShare},
+                </if>
+                <if test="item.undistributedProfitPerShare != null">
+                    #{item.undistributedProfitPerShare},
+                </if>
+                <if test="item.operationalCashFlowPerShare != null">
+                    #{item.operationalCashFlowPerShare},
+                </if>
+                <if test="item.grossProfitRate != null">
+                    #{item.grossProfitRate},
+                </if>
+                <if test="item.inventoryTurnover != null">
+                    #{item.inventoryTurnover},
+                </if>
+                </trim>
+        </foreach>
+    </insert>
+</mapper>
